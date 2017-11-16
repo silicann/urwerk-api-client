@@ -62,7 +62,7 @@ class SystemAPI(HTTPRequester):
     def change_system_time(self, data):
         return self._put(url=(self.__sub_url, "time"), data=data)
 
-    @lru_cache
+    @lru_cache()
     def get_system_time_zones(self):
         return self._get(url=(self.__sub_url, "time/zones"))
 
@@ -129,7 +129,7 @@ class DeviceAPI(HTTPRequester):
 
     __sub_url = "device"
 
-    @lru_cache
+    @lru_cache()
     def _get_device_info(self):
         return self._get(url=self.__sub_url)
 
@@ -141,7 +141,7 @@ class CapabilitiesAPI(HTTPRequester):
 
     __sub_url = "sensor/capabilities"
 
-    @lru_cache
+    @lru_cache()
     def _get_capabilities(self):
         return self._get(url=self.__sub_url)
 
@@ -306,7 +306,7 @@ class ColorspacesAPI(HTTPRequester):
         return self.change_detection_profile("current",
                                              {"colorspace": {"space_id": colorspace_id}})
 
-    @lru_cache
+    @lru_cache()
     def get_colorspaces(self):
         return self._get(url=self.__sub_url)["colorspaces"]
 
