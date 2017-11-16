@@ -1,0 +1,15 @@
+build
+dist
+.*.sw[op]
+__pycache__
+.pybuild
+.coverage
+.tox/
+
+debian/debhelper-*-stamp
+debian/files
+debian/tmp/
+debian/*.debhelper.log
+debian/*.debhelper
+debian/*.substvars
+debian/urwerk-api-client/
