@@ -5,7 +5,7 @@ import urllib.request
 from urllib.parse import urlencode
 
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 
 class APIRequestError(IOError):
