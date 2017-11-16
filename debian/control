@@ -1,0 +1,15 @@
+Source: urwerk-api-client
+Section: python
+Priority: optional
+Maintainer: Lars Kruse <kruse@silicann.com>
+Build-Depends: debhelper (>= 9), dh-python, python3-all,
+ python3-setuptools
+Standards-Version: 3.9.8
+X-Python3-Version: >= 3.2
+Vcs-Git: https://git.neusy/urwerk-api-client.git
+
+Package: python3-urwerk-api-client
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}
+Suggests: python-urwerk-api-client-doc
+Description: API client library for accessing 'Urwerk'-based devices

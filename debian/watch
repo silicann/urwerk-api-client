@@ -1,0 +1,3 @@
+version=4
+
+opts="mode=git" git://git.neusy/urwerk-api-client.git refs/tags/v([\d\.]+) debian uupdate
