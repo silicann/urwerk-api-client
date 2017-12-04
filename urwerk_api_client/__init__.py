@@ -28,7 +28,7 @@ class HTTPRequester:
 
     def _get_auth_header(self, user, password):
         __secret = encodebytes("{}:{}".format(user, password).replace('\n', '').encode())
-        return {"Authorization": "Basic {}".format(__secret.decode())}
+        return {"Authorization": "Basic {}".format(__secret.decode()).strip()}
 
     def _get(self, url=None, params=None, headers=None):
         return self._get_response(self._get_query_string_url(url, params), "GET", None, headers)
