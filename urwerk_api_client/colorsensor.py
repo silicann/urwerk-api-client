@@ -314,7 +314,41 @@ class ColorspacesAPI(HTTPRequester):
         return self._get(url=(self.__sub_url, name))
 
 
+class ConstantsMaintenanceAPI(HTTPRequester):
+    __sub_url = "maintenance/constants"
+
+    def get_calibration_constants(self, secret):
+        headers = self._get_auth_header("production-msh", secret)
+        return self._get(url=(self.__sub_url, "calibration-samples"), headers=headers)["values"]
+
+    def get_normalization_constants(self, secret):
+        headers = self._get_auth_header("production-msh", secret)
+        return self._get(url=(self.__sub_url, "normalization"), headers=headers)["values"]
+
+    def set_normalization_constants(self, secret, normalization_constants):
+        if isinstance(normalization_constants, list) and len(normalization_constants) == 3:
+            data = {"values": normalization_constants}
+        else:
+            # Todo: Vielleicht lieber eine Fehlermeldung werfen als einfach die vorhandenen Werte
+            # nochmal setzen?
+            data = {"values": self.get_normalization_constants(secret)}
+        headers = self._get_auth_header("production-msh", secret)
+        return self._put(url=(self.__sub_url, "normalization"), headers=headers,
+                         data=data)["values"]
+
+    def set_calibration_constants(self, secret, calibration_constants):
+        if isinstance(calibration_constants, list) and len(calibration_constants) == 48:
+            data = {"values": calibration_constants}
+        else:
+            # Todo: Vielleicht lieber eine Fehlermeldung werfen als einfach die vorhandenen Werte
+            # nochmal setzen?
+            data = {"values": self.get_calibration_constants(secret)}
+        headers = self._get_auth_header("production-msh", secret)
+        return self._put(url=(self.__sub_url, "calibration-samples"), headers=headers,
+                         data=data)["values"]
+
+
 class ColorsensorAPI(DetectablesAPI, DetectionProfilesAPI, EmitterAPI, MatcherAPI, NetworkAPI,
                      SamplesAPI, SystemAPI, DeviceAPI, CapabilitiesAPI, UserAPI, ColorspacesAPI,
-                     KeypadAPI, SettingsAPI, FirmwareAPI):
+                     KeypadAPI, SettingsAPI, FirmwareAPI, ConstantsMaintenanceAPI):
     """API Client for all features of a colorsensor"""
