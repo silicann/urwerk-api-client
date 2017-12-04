@@ -1,3 +1,4 @@
+from base64 import encodebytes
 import json
 import http.client
 import urllib.error
@@ -25,27 +26,33 @@ class HTTPRequester:
         else:
             return url
 
-    def _get(self, url=None, params=None):
-        return self._get_response(self._get_query_string_url(url, params), "GET", None)
+    def _get_auth_header(self, user, password):
+        __secret = encodebytes("{}:{}".format(user, password).replace('\n', '').encode())
+        return {"Authorization": "Basic {}".format(__secret.decode())}
 
-    def _put(self, url=None, data=None):
-        return self._get_response(url, "PUT", json.dumps(data).encode("utf-8"))
+    def _get(self, url=None, params=None, headers=None):
+        return self._get_response(self._get_query_string_url(url, params), "GET", None, headers)
 
-    def _post(self, url=None, data=None):
-        return self._get_response(url, "POST", json.dumps(data).encode("utf-8"))
+    def _put(self, url=None, data=None, headers=None):
+        return self._get_response(url, "PUT", json.dumps(data).encode("utf-8"), headers)
 
-    def _delete(self, url=None, params=None):
-        return self._get_response(self._get_query_string_url(url, params), "DELETE", None)
+    def _post(self, url=None, data=None, headers=None):
+        return self._get_response(url, "POST", json.dumps(data).encode("utf-8"), headers)
 
-    def _get_response(self, url_suffix, method, data):
+    def _delete(self, url=None, params=None, headers=None):
+        return self._get_response(self._get_query_string_url(url, params), "DELETE", None, headers)
+
+    def _get_response(self, url_suffix, method, data, headers):
         if url_suffix is None:
             path = ""
         elif isinstance(url_suffix, str):
             path = "/" + url_suffix
         else:
             path = "/" + "/".join(url_suffix)
+        if headers is None:
+            headers = {}
         url = self.root_url + path
-        request = urllib.request.Request(url=url, method=method, data=data)
+        request = urllib.request.Request(url=url, method=method, data=data, headers=headers)
         try:
             response = urllib.request.urlopen(request)
         except urllib.error.URLError as exc:
