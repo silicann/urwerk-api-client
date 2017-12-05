@@ -188,14 +188,29 @@ class DetectionProfilesAPI(HTTPRequester):
     def factory_reset_white_reference(self, profile_id="current"):
         self._delete(url=(self.__sub_url, profile_id, "white-reference"))
 
-    """ Get normalization constants used in the given detection profile.
-
-    The result can be different from the result of the get_factory_calibration_constants() function
-    from the ConstantsMaintenanceAPI, that returns the normalization constants stored in EEPROM.
-    """
     def get_profile_normalization_constants(self, profile_id="current"):
+        """ Get normalization constants used in the given detection profile.
+
+        The result can be different from the result of the get_factory_calibration_constants() function
+        from the ConstantsMaintenanceAPI, that returns the normalization constants stored in EEPROM.
+        """
         return self._get(url=(self.__sub_url, profile_id))["normalization_constant"]
 
+    def enable_compensation(self, profile_id="current"):
+        """ Enable the transformation of colorvalues to reduce inter-sensor variability for the
+        given profile.
+
+        Application of the transformation of colorvalues requires the availability of sensor-specific
+        constants on the device. """
+        params = {'compensation_settings': {'use_calibration_samples' : True}}
+        return self._put(url=(self.__sub_url, profile_id), data=params)
+
+    def disable_compensation(self, profile_id="current"):
+        """ Disable the transformation of colorvalues to reduce inter-sensor variability for the
+        given profile."""
+
+        params = {'compensation_settings': {'use_calibration_samples' : False}}
+        return self._put(url=(self.__sub_url, profile_id), data=params)
 
 class DetectablesAPI(HTTPRequester):
 
