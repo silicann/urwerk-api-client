@@ -83,6 +83,12 @@ class FirmwareAPI(HTTPRequester):
     def upgrade_recovery_image(self):
         return self._post(url=(self.__sub_url, "recovery", "upgrade-from-current"))
 
+    def get_current_recovery_build_id(self):
+        return self._get(url=(self.__sub_url, "recovery"))["id"]
+
+    def get_current_build_id(self):
+        return self._get(url=(self.__sub_url, "status"))["build_id"]
+
 
 class NetworkAPI(HTTPRequester):
 
@@ -191,8 +197,9 @@ class DetectionProfilesAPI(HTTPRequester):
     def get_profile_normalization_constants(self, profile_id="current"):
         """ Get normalization constants used in the given detection profile.
 
-        The result can be different from the result of the get_factory_calibration_constants() function
-        from the ConstantsMaintenanceAPI, that returns the normalization constants stored in EEPROM.
+        The result can be different from the result of the get_factory_calibration_constants()
+        function from the ConstantsMaintenanceAPI, that returns the normalization constants stored
+        in EEPROM.
         """
         return self._get(url=(self.__sub_url, profile_id))["normalization_constant"]
 
@@ -200,17 +207,18 @@ class DetectionProfilesAPI(HTTPRequester):
         """ Enable the transformation of colorvalues to reduce inter-sensor variability for the
         given profile.
 
-        Application of the transformation of colorvalues requires the availability of sensor-specific
-        constants on the device. """
-        params = {'compensation_settings': {'use_calibration_samples' : True}}
+        Application of the transformation of colorvalues requires the availability of
+        sensor-specific constants on the device. """
+        params = {'compensation_settings': {'use_calibration_samples': True}}
         return self._put(url=(self.__sub_url, profile_id), data=params)
 
     def disable_compensation(self, profile_id="current"):
         """ Disable the transformation of colorvalues to reduce inter-sensor variability for the
         given profile."""
 
-        params = {'compensation_settings': {'use_calibration_samples' : False}}
+        params = {'compensation_settings': {'use_calibration_samples': False}}
         return self._put(url=(self.__sub_url, profile_id), data=params)
+
 
 class DetectablesAPI(HTTPRequester):
 
