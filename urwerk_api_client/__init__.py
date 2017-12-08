@@ -30,6 +30,9 @@ class HTTPRequester:
         __secret = encodebytes("{}:{}".format(user, password).replace('\n', '').encode())
         return {"Authorization": "Basic {}".format(__secret.decode()).strip()}
 
+    def _get_token_auth_header(self, token):
+        return {"Authorization": "Token {}".format(token)}
+
     def _get(self, url=None, params=None, headers=None):
         return self._get_response(self._get_query_string_url(url, params), "GET", None, headers)
 
@@ -37,6 +40,8 @@ class HTTPRequester:
         return self._get_response(url, "PUT", json.dumps(data).encode("utf-8"), headers)
 
     def _post(self, url=None, data=None, headers=None):
+        if data:
+            headers.update({"Content-Type": "application/json"})
         return self._get_response(url, "POST", json.dumps(data).encode("utf-8"), headers)
 
     def _delete(self, url=None, params=None, headers=None):
@@ -52,6 +57,7 @@ class HTTPRequester:
         if headers is None:
             headers = {}
         url = self.root_url + path
+        # Todo: correctly accept a 'permanently moved' (e.g. 301) status code
         request = urllib.request.Request(url=url, method=method, data=data, headers=headers)
         try:
             response = urllib.request.urlopen(request)
@@ -62,16 +68,22 @@ class HTTPRequester:
             raise APIRequestError("API Error ({} -> {}): {}".format(url, exc, error_body)) from exc
         else:
             response_data = response.read()
-            if response.status == http.client.OK:
+            if response.status == http.client.OK or response.status == http.client.CREATED:
                 content = response_data.decode("utf-8")
                 if not content:
                     # responses are never supposed to be empty
                     raise APIRequestError("API Empty Response Error: {}".format(url))
                 json_string = json.loads(content)
-                if json_string["errors"]:
+                # The ddb does not send "errors" (yet?)
+                if "errors" in json_string.keys() and json_string["errors"]:
                     raise APIRequestError("JSON encode error: {0} -> {1}"
                                           .format(url, json_string["errors"]))
-                return json_string["data"]
+                if "results" in json_string.keys():  # ddb
+                    return json_string["results"]
+                elif "data" in json_string.keys():  # schall, colorsensor
+                    return json_string["data"]
+                else:  # ddb
+                    return json_string
             elif response.status == http.client.NO_CONTENT:
                 return None
             else:
