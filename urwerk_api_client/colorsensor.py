@@ -120,6 +120,18 @@ class NetworkAPI(HTTPRequester):
         return self._delete(url=self.__sub_url)
 
 
+class OutputsAPI(HTTPRequester):
+
+    __sub_url = "peripherals/outputs"
+
+    def set_output_mode(self, mode):
+        data = {"output_driver": mode}
+        return self._put(url=self.__sub_url, data=data)['output_driver']
+
+    def get_output_mode(self):
+        return self._get(url=self.__sub_url)['output_driver']
+
+
 class KeypadAPI(HTTPRequester):
 
     __sub_url = "peripherals/keypad"
@@ -320,6 +332,13 @@ class MatcherAPI(HTTPRequester):
     def delete_matchers(self):
         return self._delete(url=self.__sub_url)
 
+    def set_matcher_output_pattern(self, uuid, pattern):
+        data = {'output_pattern': {'states': pattern}}
+        return self._put(url=(self.__sub_url, uuid), data=data)
+
+    def get_matcher_output_pattern(self, uuid):
+        return self._get(url=(self.__sub_url, uuid))
+
 
 class SamplesAPI(HTTPRequester):
 
@@ -397,5 +416,5 @@ class ServiceMaintenanceAPI(HTTPRequester):
 class ColorsensorAPI(DetectablesAPI, DetectionProfilesAPI, EmitterAPI, MatcherAPI, NetworkAPI,
                      SamplesAPI, SystemAPI, DeviceAPI, CapabilitiesAPI, UserAPI, ColorspacesAPI,
                      KeypadAPI, SettingsAPI, FirmwareAPI, ConstantsMaintenanceAPI,
-                     ServiceMaintenanceAPI):
+                     ServiceMaintenanceAPI, OutputsAPI):
     """API Client for all features of a colorsensor"""
