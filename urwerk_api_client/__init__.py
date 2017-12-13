@@ -41,7 +41,10 @@ class HTTPRequester:
 
     def _post(self, url=None, data=None, headers=None):
         if data:
-            headers.update({"Content-Type": "application/json"})
+            if headers:
+                headers.update({"Content-Type": "application/json"})
+            else:
+                headers = {"Content-Type": "application/json"}
         return self._get_response(url, "POST", json.dumps(data).encode("utf-8"), headers)
 
     def _delete(self, url=None, params=None, headers=None):
