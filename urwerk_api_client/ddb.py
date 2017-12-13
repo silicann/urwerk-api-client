@@ -9,6 +9,11 @@ class TestsAPI(HTTPRequester):
         headers = self._get_token_auth_header(secret)
         return self._post(url=(self.__sub_url, "reports/"), headers=headers, data=data)
 
+    def send_test_results(self, secret, results):
+        data = results
+        headers = self._get_token_auth_header(secret)
+        return self._post(url=(self.__sub_url, "results/"), headers=headers, data=data)
+
 
 class DeviceAPI(HTTPRequester):
     __sub_url = "devices"
