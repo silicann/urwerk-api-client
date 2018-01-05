@@ -154,8 +154,17 @@ class DeviceAPI(HTTPRequester):
     def get_device_id(self):
         return self._get_device_info()["device_id"]
 
+    def get_device_model_key(self):
+        return self._get_device_info()["model_key"]
+
+    def get_device_model_name(self):
+        return self._get_device_info()["model"]
+
     def get_device_variant(self):
-        return self._get_device_info()["variant"]
+        return self._get_device_info().get("variant", None)
+
+    def get_device_vendor_name(self):
+        return self._get_device_info()["vendor"]
 
 
 class CapabilitiesAPI(HTTPRequester):
