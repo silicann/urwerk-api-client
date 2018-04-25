@@ -1,3 +1,9 @@
+urwerk-api-client (0.6.0-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Konrad Mohrfeldt <mohrfeldt@silicann.com>  Wed, 25 Apr 2018 17:43:36 +0200
+
 urwerk-api-client (0.5.0-1) unstable; urgency=medium
 
   * New upstream release

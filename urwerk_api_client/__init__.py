@@ -5,7 +5,7 @@ import urllib.request
 from base64 import encodebytes
 from urllib.parse import urlencode
 
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 
 
 class APIRequestError(IOError):
