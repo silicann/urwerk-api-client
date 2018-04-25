@@ -356,6 +356,16 @@ class SamplesAPI(HTTPRequester):
     def get_current_sample(self):
         return self._get(url=(self.__sub_url, "current"))
 
+    def get_sample_stream(self, count=None, format=None, delimiter=None):
+        params = dict(stream=1)
+        if count:
+            params['stream_count'] = count
+        if format:
+            params['format'] = format
+        if delimiter:
+            params['delimiter'] = delimiter
+        yield from self._get(url=self.__sub_url, params=params, handler=self._stream_response)
+
 
 class ColorspacesAPI(HTTPRequester):
 
