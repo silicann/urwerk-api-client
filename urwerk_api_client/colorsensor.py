@@ -420,6 +420,32 @@ class ConstantsMaintenanceAPI(HTTPRequester):
                          data=data)["values"]
 
 
+class DefaultsAPI(HTTPRequester):
+    __sub_url = "defaults"
+
+    def set_default(self, object_type, key, value):
+        self._post(self.__sub_url, data={
+            'object_type': object_type,
+            'key': key,
+            'value': value
+        })
+
+    def get_defaults(self):
+        return self._get(self.__sub_url)['defaults']
+
+    def get_factory_defaults(self):
+        return self._get(self.__sub_url)['factory_defaults']
+
+    def get_default(self, object_type, key):
+        def _find(*collections, test):
+            for collection in collections:
+                for obj in collection():
+                    if test(obj):
+                        return obj
+        return _find(self.get_defaults, self.get_factory_defaults,
+                     test=lambda d, o=object_type, k=key: d['object_type'] == o and d['key'] == k)
+
+
 class ServiceMaintenanceAPI(HTTPRequester):
     __sub_url = "maintenance/services"
 
@@ -432,8 +458,8 @@ class ServiceMaintenanceAPI(HTTPRequester):
         return self._delete(url=(self.__sub_url, service), headers=headers)
 
 
-class ColorsensorAPI(DetectablesAPI, DetectionProfilesAPI, EmitterAPI, MatcherAPI, NetworkAPI,
-                     SamplesAPI, SystemAPI, DeviceAPI, CapabilitiesAPI, UserAPI, ColorspacesAPI,
-                     KeypadAPI, SettingsAPI, FirmwareAPI, ConstantsMaintenanceAPI,
+class ColorsensorAPI(DetectablesAPI, DefaultsAPI, DetectionProfilesAPI, EmitterAPI, MatcherAPI,
+                     NetworkAPI, SamplesAPI, SystemAPI, DeviceAPI, CapabilitiesAPI, UserAPI,
+                     ColorspacesAPI, KeypadAPI, SettingsAPI, FirmwareAPI, ConstantsMaintenanceAPI,
                      ServiceMaintenanceAPI, OutputsAPI):
     """API Client for all features of a colorsensor"""
