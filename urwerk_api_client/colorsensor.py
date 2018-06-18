@@ -386,40 +386,6 @@ class ColorspacesAPI(HTTPRequester):
         return self._get(url=(self.__sub_url, name))
 
 
-class ConstantsMaintenanceAPI(HTTPRequester):
-    __sub_url = "maintenance/constants"
-
-    def get_factory_calibration_constants(self, secret):
-        headers = self._get_auth_header("production-msh", secret)
-        return self._get(url=(self.__sub_url, "calibration-samples"), headers=headers)["values"]
-
-    def get_factory_normalization_constants(self, secret):
-        headers = self._get_auth_header("production-msh", secret)
-        return self._get(url=(self.__sub_url, "normalization"), headers=headers)["values"]
-
-    def set_factory_normalization_constants(self, secret, normalization_constants):
-        if isinstance(normalization_constants, list) and len(normalization_constants) == 3:
-            data = {"values": normalization_constants}
-        else:
-            # Todo: Vielleicht lieber eine Fehlermeldung werfen als einfach die vorhandenen Werte
-            # nochmal setzen?
-            data = {"values": self.get_normalization_constants(secret)}
-        headers = self._get_auth_header("production-msh", secret)
-        return self._put(url=(self.__sub_url, "normalization"), headers=headers,
-                         data=data)["values"]
-
-    def set_factory_calibration_constants(self, secret, calibration_constants):
-        if isinstance(calibration_constants, list) and len(calibration_constants) == 48:
-            data = {"values": calibration_constants}
-        else:
-            # Todo: Vielleicht lieber eine Fehlermeldung werfen als einfach die vorhandenen Werte
-            # nochmal setzen?
-            data = {"values": self.get_calibration_constants(secret)}
-        headers = self._get_auth_header("production-msh", secret)
-        return self._put(url=(self.__sub_url, "calibration-samples"), headers=headers,
-                         data=data)["values"]
-
-
 class DefaultsAPI(HTTPRequester):
     __sub_url = "defaults"
 
@@ -446,20 +412,7 @@ class DefaultsAPI(HTTPRequester):
                      test=lambda d, o=object_type, k=key: d['object_type'] == o and d['key'] == k)
 
 
-class ServiceMaintenanceAPI(HTTPRequester):
-    __sub_url = "maintenance/services"
-
-    def enable_service(self, secret, service):
-        headers = self._get_auth_header("production-msh", secret)
-        return self._post(url=(self.__sub_url, service), headers=headers)
-
-    def disable_service(self, secret, service):
-        headers = self._get_auth_header("production-msh", secret)
-        return self._delete(url=(self.__sub_url, service), headers=headers)
-
-
 class ColorsensorAPI(DetectablesAPI, DefaultsAPI, DetectionProfilesAPI, EmitterAPI, MatcherAPI,
                      NetworkAPI, SamplesAPI, SystemAPI, DeviceAPI, CapabilitiesAPI, UserAPI,
-                     ColorspacesAPI, KeypadAPI, SettingsAPI, FirmwareAPI, ConstantsMaintenanceAPI,
-                     ServiceMaintenanceAPI, OutputsAPI):
+                     ColorspacesAPI, KeypadAPI, SettingsAPI, FirmwareAPI, OutputsAPI):
     """API Client for all features of a colorsensor"""
