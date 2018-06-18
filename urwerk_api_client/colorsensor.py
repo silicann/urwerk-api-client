@@ -80,6 +80,9 @@ class FirmwareAPI(HTTPRequester):
     def get_firmware_source_url(self):
         return self._get_firmware_status()["source_url"]
 
+    def get_firmware_recovery_information(self):
+        return self._get(url=(self.__sub_url, "recovery"))
+
     def upgrade_recovery_image(self):
         return self._post(url=(self.__sub_url, "recovery", "upgrade-from-current"))
 
