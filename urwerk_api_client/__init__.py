@@ -12,6 +12,15 @@ class APIRequestError(IOError):
     """ exceptions raised by API requests """
 
 
+class APIAuthenticationError(APIRequestError):
+    """ raised in case an action is only available after authentication """
+
+
+class APIAuthorizationError(APIRequestError):
+    """ raised in case an action requires authentication and the provided credentials
+    are not sufficient """
+
+
 def _handle_request(root_url, url_suffix, method, data, headers, handler):
     if url_suffix is None:
         path = ""
@@ -26,11 +35,15 @@ def _handle_request(root_url, url_suffix, method, data, headers, handler):
     request = urllib.request.Request(url=url, method=method, data=data, headers=headers)
     try:
         response = urllib.request.urlopen(request)
-    except urllib.error.URLError as exc:
-        raise APIRequestError("API Connect Error ({}): {}".format(url, exc)) from exc
     except urllib.error.HTTPError as exc:
         error_body = exc.fp.read()
-        raise APIRequestError("API Error ({} -> {}): {}".format(url, exc, error_body)) from exc
+        error_type = {
+            401: APIAuthenticationError,
+            403: APIAuthorizationError
+        }.get(exc.code, APIRequestError)
+        raise error_type("API Error ({} -> {}): {}".format(url, exc, error_body)) from exc
+    except urllib.error.URLError as exc:
+        raise APIRequestError("API Connect Error ({}): {}".format(url, exc)) from exc
     else:
         def unpack_data(data):
             content = data.decode("utf-8")
