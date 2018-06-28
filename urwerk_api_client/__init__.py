@@ -93,11 +93,11 @@ class HTTPRequester:
 
     def _get(self, url=None, params=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_query_string_url(url, params), "GET", None, headers)
+            self._get_query_string_url(url, params), "GET", None, headers=headers)
 
     def _put(self, url=None, data=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            url, "PUT", json.dumps(data).encode("utf-8"), headers)
+            url, "PUT", json.dumps(data).encode("utf-8"), headers=headers)
 
     def _post(self, url=None, data=None, headers=None, handler=None):
         if data:
@@ -106,19 +106,19 @@ class HTTPRequester:
             else:
                 headers = {"Content-Type": "application/json"}
         return (handler or self._get_response)(
-            url, "POST", json.dumps(data).encode("utf-8"), headers)
+            url, "POST", json.dumps(data).encode("utf-8"), headers=headers)
 
     def _delete(self, url=None, params=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_query_string_url(url, params), "DELETE", None, headers)
+            self._get_query_string_url(url, params), "DELETE", None, headers=headers)
 
-    def _get_response(self, url_suffix, method, data, headers):
+    def _get_response(self, url_suffix, method, data, headers=None):
         def handler(res, unpacker):
             return unpacker(res.read())
 
         return _handle_request(self.root_url, url_suffix, method, data, headers, handler)
 
-    def _stream_response(self, url_suffix, method, data, headers):
+    def _stream_response(self, url_suffix, method, data, headers=None):
         def handler(res, unpacker):
             for data in res:
                 yield unpacker(data)
