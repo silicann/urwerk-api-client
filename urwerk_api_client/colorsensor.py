@@ -103,7 +103,7 @@ class NetworkAPI(HTTPRequester):
         return interfaces
 
     def get_network_interface_by_name(self, name):
-        return self._get(url=(self.__sub_url, "interfaces", name))["network_interface"]
+        return self._get(url=(self.__sub_url, "interfaces", name))
 
     def set_network_interface_address_in_domain(self, network_interface_name, address_domain,
                                                 address_configurations):
