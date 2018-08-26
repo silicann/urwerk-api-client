@@ -155,13 +155,13 @@ class DeviceAPI(HTTPRequester):
         return self._get(url=self.__sub_url)
 
     def get_device_id(self):
-        return self._get_device_info()["device_id"]
+        return self._get_device_info()["id"]
 
     def get_device_model_key(self):
         return self._get_device_info()["model_key"]
 
     def get_device_model_name(self):
-        return self._get_device_info()["model"]
+        return self._get_device_info()["model_name"]
 
     def get_device_variant(self):
         return self._get_device_info().get("variant", None)
