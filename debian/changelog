@@ -1,3 +1,9 @@
+urwerk-api-client (0.9.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Konrad Mohrfeldt <konrad.mohrfeldt@farbdev.org>  Fri, 31 Aug 2018 14:59:31 +0200
+
 urwerk-api-client (0.9.1-1) unstable; urgency=medium
 
   * New upstream release
