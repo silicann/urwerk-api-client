@@ -169,6 +169,23 @@ class DeviceAPI(HTTPRequester):
     def get_device_vendor_name(self):
         return self._get_device_info()["vendor"]
 
+    def get_device_vendor(self):
+        return self._get_device_info()["vendor"]
+
+    def get_device_model(self):
+        return self._get_device_info()["model"]
+
+    def get_device_model_key(self):
+        return self._get_device_info()["model_key"]
+
+
+class ActionTriggersAPI(HTTPRequester):
+
+    __sub_url = "sensor/action-triggers"
+
+    def delete_action_triggers(self):
+        return self._delete(url=self.__sub_url)
+
 
 class CapabilitiesAPI(HTTPRequester):
 
@@ -417,5 +434,6 @@ class DefaultsAPI(HTTPRequester):
 
 class ColorsensorAPI(DetectablesAPI, DefaultsAPI, DetectionProfilesAPI, EmitterAPI, MatcherAPI,
                      NetworkAPI, SamplesAPI, SystemAPI, DeviceAPI, CapabilitiesAPI, UserAPI,
-                     ColorspacesAPI, KeypadAPI, SettingsAPI, FirmwareAPI, OutputsAPI):
+                     ColorspacesAPI, KeypadAPI, SettingsAPI, FirmwareAPI, OutputsAPI,
+                     ActionTriggersAPI):
     """API Client for all features of a colorsensor"""
