@@ -117,7 +117,7 @@ class NetworkAPI(HTTPRequester):
         assert address_domain in ("ipv4", "ipv6")
         data = {address_domain: {"address_configurations": address_configurations}}
         return self._put(url=(self.__sub_url, "interfaces", network_interface_name),
-                         data=data)["network_interface"]
+                         data=data)
 
     def reset_network_settings_to_defaults(self):
         return self._delete(url=self.__sub_url)
