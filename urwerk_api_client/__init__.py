@@ -6,7 +6,7 @@ import urllib.error
 from urllib.parse import urlencode
 import urllib.request
 
-VERSION = "0.9.3"
+VERSION = "0.10.0"
 
 
 class APIRequestError(IOError):
