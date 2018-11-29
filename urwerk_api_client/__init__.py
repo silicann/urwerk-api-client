@@ -1,9 +1,10 @@
+from base64 import encodebytes
+import enum
 import http.client
 import json
 import urllib.error
-import urllib.request
-from base64 import encodebytes
 from urllib.parse import urlencode
+import urllib.request
 
 VERSION = "0.9.3"
 
@@ -124,3 +125,20 @@ class HTTPRequester:
                 yield unpacker(data)
 
         yield from _handle_request(self.root_url, url_suffix, method, data, headers, handler)
+
+
+class IPProtocol(enum.Enum):
+    v4 = ('ipv4', 4, 'IPv4')
+    v6 = ('ipv6', 6, 'IPv6')
+
+    @property
+    def id(self):
+        return self.value[0]
+
+    @property
+    def version(self):
+        return self.value[1]
+
+    @property
+    def label(self):
+        return self.value[2]

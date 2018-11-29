@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from urwerk_api_client import HTTPRequester
+from urwerk_api_client import HTTPRequester, IPProtocol
 
 
 class UserAPI(HTTPRequester):
@@ -105,18 +105,19 @@ class NetworkAPI(HTTPRequester):
     def get_network_interface_by_name(self, name):
         return self._get(url=(self.__sub_url, "interfaces", name))
 
-    def set_network_interface_address_in_domain(self, network_interface_name, address_domain,
-                                                address_configurations):
+    def set_network_interface_address_in_domain(
+            self, iface: str, protocol: IPProtocol, configuration):
         """ reconfigure the address configurations of an interface in the given domain
 
-        The other address domain remains unchanged.
+        The other IP protocol configuration remains unchanged.
         Changes are applied immediately.
 
-        @param domain: "ipv4" or "ipv6"
+        @param iface: the name of the network interface
+        @param protocol: the IP protocol for this configuration
+        @param configuration: the new configuration for this network interface and IP protocol
         """
-        assert address_domain in ("ipv4", "ipv6")
-        data = {address_domain: {"address_configurations": address_configurations}}
-        return self._put(url=(self.__sub_url, "interfaces", network_interface_name),
+        data = {protocol.id: {"address_configurations": configuration}}
+        return self._put(url=(self.__sub_url, "interfaces", iface),
                          data=data)
 
     def reset_network_settings_to_defaults(self):
