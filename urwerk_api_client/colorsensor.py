@@ -222,12 +222,14 @@ class DetectionProfilesAPI(HTTPRequester):
     def delete_detection_profile(self, uuid):
         return self._delete(url=(self.__sub_url, uuid))
 
-    def run_autogain(self, minimum_sample_rate=None, target_level=None):
+    def run_autogain(self, minimum_sample_rate=None, target_level=None, averages=None):
         params = {}
         if minimum_sample_rate is not None:
             params["minimum_sample_rate"] = minimum_sample_rate
         if target_level is not None:
             params["level"] = target_level
+        if averages is not None:
+            params["averages"] = target_level
         return self._post(url=(self.__sub_url, "current", "autogain"), data=params)
 
     def set_white_reference(self, profile_id="current"):
