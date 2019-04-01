@@ -229,7 +229,7 @@ class DetectionProfilesAPI(HTTPRequester):
         if target_level is not None:
             params["level"] = target_level
         if averages is not None:
-            params["averages"] = target_level
+            params["averages"] = averages
         return self._post(url=(self.__sub_url, "current", "autogain"), data=params)
 
     def set_white_reference(self, profile_id="current"):
