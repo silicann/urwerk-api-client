@@ -22,16 +22,9 @@ class APIAuthorizationError(APIRequestError):
     are not sufficient """
 
 
-def _handle_request(root_url, url_suffix, method, data, headers, handler):
-    if url_suffix is None:
-        path = ""
-    elif isinstance(url_suffix, str):
-        path = "/" + url_suffix
-    else:
-        path = "/" + "/".join(url_suffix)
+def _handle_request(url, method, data, headers, handler):
     if headers is None:
         headers = {}
-    url = root_url + path
     # Todo: correctly accept a 'permanently moved' (e.g. 301) status code
     request = urllib.request.Request(url=url, method=method, data=data, headers=headers)
     try:
@@ -77,13 +70,18 @@ class HTTPRequester:
     def __init__(self, api_url):
         self.root_url = api_url
 
-    def _get_query_string_url(self, url, params):
+    def _get_url(self, url, params):
+        if isinstance(url, tuple):
+            url = "/".join(url)
         if params:
             assert isinstance(params, dict)
             encoded_params = urlencode(params)
-            return "{}?{}".format(url, encoded_params)
+            url = "{}?{}".format(url, encoded_params)
+        if url is None:
+            path = ""
         else:
-            return url
+            path = "/" + url
+        return self.root_url + path
 
     def _get_auth_header(self, user, password):
         __secret = encodebytes("{}:{}".format(user, password).replace('\n', '').encode())
@@ -94,11 +92,11 @@ class HTTPRequester:
 
     def _get(self, url=None, params=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_query_string_url(url, params), "GET", None, headers=headers)
+            self._get_url(url, params), "GET", None, headers=headers)
 
     def _put(self, url=None, data=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            url, "PUT", json.dumps(data).encode("utf-8"), headers=headers)
+            self._get_url(url, None), "PUT", json.dumps(data).encode("utf-8"), headers=headers)
 
     def _post(self, url=None, data=None, headers=None, handler=None):
         if data:
@@ -107,24 +105,24 @@ class HTTPRequester:
             else:
                 headers = {"Content-Type": "application/json"}
         return (handler or self._get_response)(
-            url, "POST", json.dumps(data).encode("utf-8"), headers=headers)
+            self._get_url(url, None), "POST", json.dumps(data).encode("utf-8"), headers=headers)
 
     def _delete(self, url=None, params=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_query_string_url(url, params), "DELETE", None, headers=headers)
+            self._get_url(url, params), "DELETE", None, headers=headers)
 
-    def _get_response(self, url_suffix, method, data, headers=None):
+    def _get_response(self, url, method, data, headers=None):
         def handler(res, unpacker):
             return unpacker(res.read())
 
-        return _handle_request(self.root_url, url_suffix, method, data, headers, handler)
+        return _handle_request(url, method, data, headers, handler)
 
     def _stream_response(self, url_suffix, method, data, headers=None):
         def handler(res, unpacker):
             for data in res:
                 yield unpacker(data)
 
-        yield from _handle_request(self.root_url, url_suffix, method, data, headers, handler)
+        yield from _handle_request(url, method, data, headers, handler)
 
 
 class IPProtocol(enum.Enum):
