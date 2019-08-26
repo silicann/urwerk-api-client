@@ -117,7 +117,7 @@ class HTTPRequester:
 
         return _handle_request(url, method, data, headers, handler)
 
-    def _stream_response(self, url_suffix, method, data, headers=None):
+    def _stream_response(self, url, method, data, headers=None):
         def handler(res, unpacker):
             for data in res:
                 yield unpacker(data)
