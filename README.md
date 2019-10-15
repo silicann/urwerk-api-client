@@ -14,14 +14,18 @@ Usage example:
 
 ```python
 import urwerk_api_client.colorsensor as cs
+import urwerk_api_client.spectral_imager as si
 
 # [blickwerk-host-id] => numeric part of the sensor's host-name 
-api = cs.ColorsensorAPI("http://[blickwerk-host-id].ddb/api")
+color_client = cs.ColorsensorAPI("http://[blickwerk-host-id].ddb/api")
+spectral_client = si.SpectralImagerAPI("http://[blickwerk-host-id].ddb/api")
 
 # to show available functions use:
-# dir(api)
+# dir(color_client)
+# or
+# dir(spectral_client)
 
 # request-example
-version_string = api.get_firmware_version()
+version_string = color_client.get_firmware_version()
 print(version_string)
 ```
