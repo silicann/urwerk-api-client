@@ -237,11 +237,11 @@ class DetectionProfilesAPI(HTTPRequester):
     def post_detection_profile(self, data):
         return self._post(url=self.__sub_url, data=data)
 
-    def change_detection_profile(self, uuid, data):
-        return self._put(url=(self.__sub_url, uuid), data=data)
+    def change_detection_profile(self, any_id, data):
+        return self._put(url=(self.__sub_url, any_id), data=data)
 
-    def delete_detection_profile(self, uuid):
-        return self._delete(url=(self.__sub_url, uuid))
+    def delete_detection_profile(self, any_id):
+        return self._delete(url=(self.__sub_url, any_id))
 
     def run_autogain(self, minimum_sample_rate=None, target_level=None, averages=None,
                      enable_internal_emitter=None, enable_ambient_light_compensation=None):
@@ -318,15 +318,15 @@ class DetectablesAPI(HTTPRequester):
             data["profile_id"] = profile
         return self._post(url=self.__sub_url, data=data)
 
-    def change_detectable(self, uuid, data, profile=None):
+    def change_detectable(self, any_id, data, profile=None):
         data = {} if data is None else dict(data)
         if profile is not None:
             data["profile_id"] = profile
-        return self._put(url=(self.__sub_url, uuid), data=data)
+        return self._put(url=(self.__sub_url, any_id), data=data)
 
-    def delete_detectable(self, uuid, profile=None):
+    def delete_detectable(self, any_id, profile=None):
         params = {} if profile is None else {"profile_id": profile}
-        return self._delete(url=(self.__sub_url, uuid), params=params)
+        return self._delete(url=(self.__sub_url, any_id), params=params)
 
     def delete_detectables(self, profile=None, matcher_id=None):
         params = {}
@@ -349,11 +349,11 @@ class EmitterAPI(HTTPRequester):
         params = None if profile is None else {"profile_id": profile}
         return self._get(url=(self.__sub_url, hid), params=params)
 
-    def change_emitter(self, uuid, data, profile=None):
+    def change_emitter(self, any_id, data, profile=None):
         data = {} if data is None else dict(data)
         if profile is not None:
             data["profile_id"] = profile
-        return self._put(url=(self.__sub_url, uuid), data=data)
+        return self._put(url=(self.__sub_url, any_id), data=data)
 
 
 class MatcherAPI(HTTPRequester):
@@ -380,25 +380,25 @@ class MatcherAPI(HTTPRequester):
             data["profile_id"] = profile
         return self._post(url=self.__sub_url, data=data)
 
-    def change_matcher(self, uuid, data, profile=None):
+    def change_matcher(self, any_id, data, profile=None):
         data = {} if data is None else dict(data)
         if profile is not None:
             data["profile_id"] = profile
-        return self._put(url=(self.__sub_url, uuid), data=data)
+        return self._put(url=(self.__sub_url, any_id), data=data)
 
-    def delete_matcher(self, uuid, profile=None):
+    def delete_matcher(self, any_id, profile=None):
         params = {} if profile is None else {"profile_id": profile}
-        return self._delete(url=(self.__sub_url, uuid), params=params)
+        return self._delete(url=(self.__sub_url, any_id), params=params)
 
     def delete_matchers(self):
         return self._delete(url=self.__sub_url)
 
-    def set_matcher_output_pattern(self, uuid, pattern):
+    def set_matcher_output_pattern(self, any_id, pattern):
         data = {'output_pattern': {'states': pattern}}
-        return self._put(url=(self.__sub_url, uuid), data=data)
+        return self._put(url=(self.__sub_url, any_id), data=data)
 
-    def get_matcher_output_pattern(self, uuid):
-        return self._get(url=(self.__sub_url, uuid))
+    def get_matcher_output_pattern(self, any_id):
+        return self._get(url=(self.__sub_url, any_id))
 
 
 class SamplesAPI(HTTPRequester):
