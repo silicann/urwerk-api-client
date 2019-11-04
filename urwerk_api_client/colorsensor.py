@@ -240,7 +240,8 @@ class DetectionProfilesAPI(HTTPRequester):
     def delete_detection_profile(self, uuid):
         return self._delete(url=(self.__sub_url, uuid))
 
-    def run_autogain(self, minimum_sample_rate=None, target_level=None, averages=None):
+    def run_autogain(self, minimum_sample_rate=None, target_level=None, averages=None,
+                     enable_internal_emitter=None, enable_ambient_light_compensation=None):
         params = {}
         if minimum_sample_rate is not None:
             params["minimum_sample_rate"] = minimum_sample_rate
@@ -248,6 +249,10 @@ class DetectionProfilesAPI(HTTPRequester):
             params["level"] = target_level
         if averages is not None:
             params["averages"] = averages
+        if enable_internal_emitter is not None:
+            params["enable_internal_emitter"] = enable_internal_emitter
+        if enable_ambient_light_compensation is not None:
+            params["enable_ambient_light_compensation"] = enable_ambient_light_compensation
         return self._post(url=(self.__sub_url, "current", "autogain"), data=params)
 
     def set_white_reference(self, profile_id="current"):
