@@ -199,6 +199,24 @@ class CapabilitiesAPI(HTTPRequester):
     def get_trigger_sources(self):
         return self._get_capabilities()["trigger_sources"]
 
+    def get_maximum_sample_rate(self):
+        return self._get_capabilities()["maximum_sample_rate"]
+
+    def get_maximum_detectables_count(self):
+        return self._get_capabilities()["maximum_detectables_count"]
+
+    def get_maximum_matchers_count(self):
+        return self._get_capabilities()["maximum_matchers_count"]
+
+    def get_switching_output_drivers(self):
+        return self._get_capabilities()["output_drivers"]
+
+    def get_supported_tolerance_shapes(self):
+        return {item["shape"] for item in self._get_capabilities()["tolerances"]}
+
+    def get_supported_colorspaces(self):
+        return {item["space_id"] for item in self._get_capabilities()["colorspaces"]}
+
 
 class DetectionProfilesAPI(HTTPRequester):
 
