@@ -228,8 +228,11 @@ class DetectionProfilesAPI(HTTPRequester):
     def get_current_detection_profile(self):
         return self._get(url=(self.__sub_url, "current"))
 
-    def get_detection_profile_by_uuid(self, uuid):
-        return self._get(url=(self.__sub_url, uuid))
+    def get_detection_profile(self, any_id):
+        return self._get(url=(self.__sub_url, any_id))
+
+    # for backwards compatibility
+    get_detection_profile_by_uuid = get_detection_profile
 
     def post_detection_profile(self, data):
         return self._post(url=self.__sub_url, data=data)
@@ -302,9 +305,12 @@ class DetectablesAPI(HTTPRequester):
         detectables.sort(key=lambda item: item["uuid"])
         return detectables
 
-    def get_detectable_by_uuid(self, uuid, profile=None):
+    def get_detectable(self, any_id, profile=None):
         params = None if profile is None else {"profile_id": profile}
-        return self._get(url=(self.__sub_url, uuid), params=params)
+        return self._get(url=(self.__sub_url, any_id), params=params)
+
+    # for backwards compatibility
+    get_detectable_by_uuid = get_detectable
 
     def post_detectable(self, profile=None, data=None):
         data = {} if data is None else dict(data)
@@ -361,9 +367,12 @@ class MatcherAPI(HTTPRequester):
         matchers.sort(key=lambda item: item["uuid"])
         return matchers
 
-    def get_matcher_by_uuid(self, uuid, profile=None):
+    def get_matcher(self, any_id, profile=None):
         params = None if profile is None else {"profile_id": profile}
-        return self._get(url=(self.__sub_url, uuid), params=params)
+        return self._get(url=(self.__sub_url, any_id), params=params)
+
+    # for backwards compatibility
+    get_matcher_by_uuid = get_matcher
 
     def post_matcher(self, profile=None, data=None):
         data = {} if data is None else dict(data)
