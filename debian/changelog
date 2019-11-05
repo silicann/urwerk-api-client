@@ -1,3 +1,9 @@
+urwerk-api-client (0.14.0-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Lars Kruse <kruse@silicann.com>  Tue, 05 Nov 2019 01:27:04 +0100
+
 urwerk-api-client (0.13.0-1) unstable; urgency=medium
 
   * New upstream release
