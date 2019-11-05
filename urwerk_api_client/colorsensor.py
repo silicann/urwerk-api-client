@@ -124,6 +124,33 @@ class NetworkAPI(HTTPRequester):
         return self._delete(url=self.__sub_url)
 
 
+class PeripheralsAPI(HTTPRequester):
+
+    __sub_url = "peripherals"
+
+    def get_rs232_baudrate(self):
+        return self._get(url=(self.__sub_url, "rs232"))["baud_rate"]
+
+    def set_rs232_baudrate(self, baud_rate):
+        return self._get(url=(self.__sub_url, "rs232"), data={"baud_rate": baud_rate})
+
+    def get_rs232_protocol(self):
+        return self._get(url=(self.__sub_url, "rs232"))["protocol"]
+
+    def set_rs232_protocol(self, protocol, parameters):
+        data = {"type": protocol}
+        data.update(parameters)
+        return self._put(url=(self.__sub_url, "rs232"), data={"protocol": data})
+
+    def get_usb_protocol(self):
+        return self._get(url=(self.__sub_url, "usb"))["protocol"]
+
+    def set_usb_protocol(self, protocol, parameters):
+        data = {"type": protocol}
+        data.update(parameters)
+        return self._put(url=(self.__sub_url, "usb"), data={"protocol": data})
+
+
 class OutputsAPI(HTTPRequester):
 
     __sub_url = "peripherals/outputs"
@@ -467,5 +494,5 @@ class DefaultsAPI(HTTPRequester):
 class ColorsensorAPI(DetectablesAPI, DefaultsAPI, DetectionProfilesAPI, EmitterAPI, MatcherAPI,
                      NetworkAPI, SamplesAPI, SystemAPI, DeviceAPI, CapabilitiesAPI, UserAPI,
                      ColorspacesAPI, KeypadAPI, SettingsAPI, FirmwareAPI, OutputsAPI,
-                     ActionTriggersAPI):
+                     PeripheralsAPI, ActionTriggersAPI):
     """API Client for all features of a colorsensor"""
