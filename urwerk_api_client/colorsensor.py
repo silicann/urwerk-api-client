@@ -252,7 +252,7 @@ class DetectionProfilesAPI(HTTPRequester):
         return self._get(url=(self.__sub_url, "current"))
 
     def get_detection_profile(self, any_id):
-        return self._get(url=(self.__sub_url, any_id))
+        return self._get(url=(self.__sub_url, str(any_id)))
 
     # for backwards compatibility
     get_detection_profile_by_uuid = get_detection_profile
@@ -261,10 +261,10 @@ class DetectionProfilesAPI(HTTPRequester):
         return self._post(url=self.__sub_url, data=data)
 
     def change_detection_profile(self, any_id, data):
-        return self._put(url=(self.__sub_url, any_id), data=data)
+        return self._put(url=(self.__sub_url, str(any_id)), data=data)
 
     def delete_detection_profile(self, any_id):
-        return self._delete(url=(self.__sub_url, any_id))
+        return self._delete(url=(self.__sub_url, str(any_id)))
 
     def run_autogain(self, minimum_sample_rate=None, target_level=None, averages=None,
                      enable_internal_emitter=None, enable_ambient_light_compensation=None):
@@ -330,7 +330,7 @@ class DetectablesAPI(HTTPRequester):
 
     def get_detectable(self, any_id, profile=None):
         params = None if profile is None else {"profile_id": profile}
-        return self._get(url=(self.__sub_url, any_id), params=params)
+        return self._get(url=(self.__sub_url, str(any_id)), params=params)
 
     # for backwards compatibility
     get_detectable_by_uuid = get_detectable
@@ -345,11 +345,11 @@ class DetectablesAPI(HTTPRequester):
         data = {} if data is None else dict(data)
         if profile is not None:
             data["profile_id"] = profile
-        return self._put(url=(self.__sub_url, any_id), data=data)
+        return self._put(url=(self.__sub_url, str(any_id)), data=data)
 
     def delete_detectable(self, any_id, profile=None):
         params = {} if profile is None else {"profile_id": profile}
-        return self._delete(url=(self.__sub_url, any_id), params=params)
+        return self._delete(url=(self.__sub_url, str(any_id)), params=params)
 
     def delete_detectables(self, profile=None, matcher_id=None):
         params = {}
@@ -376,7 +376,7 @@ class EmitterAPI(HTTPRequester):
         data = {} if data is None else dict(data)
         if profile is not None:
             data["profile_id"] = profile
-        return self._put(url=(self.__sub_url, any_id), data=data)
+        return self._put(url=(self.__sub_url, str(any_id)), data=data)
 
 
 class MatcherAPI(HTTPRequester):
@@ -392,7 +392,7 @@ class MatcherAPI(HTTPRequester):
 
     def get_matcher(self, any_id, profile=None):
         params = None if profile is None else {"profile_id": profile}
-        return self._get(url=(self.__sub_url, any_id), params=params)
+        return self._get(url=(self.__sub_url, str(any_id)), params=params)
 
     # for backwards compatibility
     get_matcher_by_uuid = get_matcher
@@ -407,21 +407,21 @@ class MatcherAPI(HTTPRequester):
         data = {} if data is None else dict(data)
         if profile is not None:
             data["profile_id"] = profile
-        return self._put(url=(self.__sub_url, any_id), data=data)
+        return self._put(url=(self.__sub_url, str(any_id)), data=data)
 
     def delete_matcher(self, any_id, profile=None):
         params = {} if profile is None else {"profile_id": profile}
-        return self._delete(url=(self.__sub_url, any_id), params=params)
+        return self._delete(url=(self.__sub_url, str(any_id)), params=params)
 
     def delete_matchers(self):
         return self._delete(url=self.__sub_url)
 
     def set_matcher_output_pattern(self, any_id, pattern):
         data = {'output_pattern': {'states': pattern}}
-        return self._put(url=(self.__sub_url, any_id), data=data)
+        return self._put(url=(self.__sub_url, str(any_id)), data=data)
 
     def get_matcher_output_pattern(self, any_id):
-        return self._get(url=(self.__sub_url, any_id))
+        return self._get(url=(self.__sub_url, str(any_id)))
 
 
 class SamplesAPI(HTTPRequester):
