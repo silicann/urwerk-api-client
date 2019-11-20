@@ -34,19 +34,15 @@ class SpectralAPI(HTTPRequester):
     def get_average_count(self, profile_id="current"):
         return self.get_spectral_sampling_settings(profile_id)["average_count"]
 
-    def set_average_count(self, average_count=None, profile_id="current"):
-        data = {"sampling_settings": {}}
-        if average_count is not None:
-            data["sampling_settings"]["average_count"] = average_count
+    def set_average_count(self, average_count, profile_id="current"):
+        data = {"sampling_settings": {"average_count": average_count}}
         return self.change_detection_profile(profile_id, data)
 
     def get_integration_time(self, profile_id="current"):
         return self.get_spectral_sampling_settings(profile_id)["integration_time"]
 
-    def set_integration_time(self, integration_time=None, profile_id="current"):
-        data = {"sampling_settings": {}}
-        if integration_time is not None:
-            data["sampling_settings"]["integration_time"] = integration_time
+    def set_integration_time(self, integration_time, profile_id="current"):
+        data = {"sampling_settings": {"integration_time": integration_time}}
         return self.change_detection_profile(profile_id, data)
 
     def spectral_normalize(self):
@@ -56,11 +52,24 @@ class SpectralAPI(HTTPRequester):
         return self._delete(url=(self.__sub_url, "normalization"))
 
     def get_regions_of_interest(self):
+        """
+        returns an array of dictionaries where each dictionary contains two points:
+        x_min, y_min => point with lowest measured value
+        x_max, y_max => point with highest measured value
+        => both points are within one of the previously set regions of interest
+        => x represents the wavelength and y represents the value of each point
+
+        example output: [{'y_min': 0.108, 'x_min': 400.071, 'y_max': 0.802, 'x_max': 438.688}]
+        => minimal value in region is 0.108 at wavelength 400.071
+        => maximal value in region is 0.802 at wavelength 438.688
+        """
         return self._get_spectral_sample()["regions_of_interest"]
 
     def set_regions_of_interest(self, boundaries=None):
         """
-        boundaries => array of (lower_bound, upper_bound)
+        boundaries:
+            array of (lower_bound, upper_bound)
+            or array of {"lower boundary": float, "upper_boundary": float}
         example usage:
             set_regions_of_interest(
                 [(0.0, 100.0), (50.0, 250.0)]
