@@ -69,7 +69,7 @@ class SpectralAPI(HTTPRequester):
         """
         boundaries:
             array of (lower_bound, upper_bound)
-            or array of {"lower boundary": float, "upper_boundary": float}
+            or array of {"lower_boundary": float, "upper_boundary": float}
         example usage:
             set_regions_of_interest(
                 [(0.0, 100.0), (50.0, 250.0)]
