@@ -4,14 +4,11 @@ from urwerk_api_client import HTTPRequester, IPProtocol
 
 
 class UserAPI(HTTPRequester):
-    # TODO: maybe the user api is not "finished" yet ... it was not documented
-    #       so there may need to be things changed
 
-    # TODO: wrong suffix
-    __sub_url = "system"
+    __sub_url = "access/users"
 
     def get_users(self):
-        return self._get()
+        return self._get(url=self.__sub_url)["users"]
 
     def get_user_by_name(self, user_name):
         return self._get(url=(self.__sub_url, user_name))
