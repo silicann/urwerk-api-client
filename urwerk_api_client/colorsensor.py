@@ -424,6 +424,21 @@ class MatcherAPI(HTTPRequester):
         return self._get(url=(self.__sub_url, str(any_id)))
 
 
+class AccessAPI(HTTPRequester):
+
+    __sub_url = "access"
+
+    def get_blocked_remote_actions(self):
+        return self._get(url=self.__sub_url).get("blocked_remote_actions", [])
+
+    def set_blocked_remote_actions(self, actions):
+        response = self._put(
+            url=self.__sub_url,
+            data={"blocked_remote_actions": list(actions or [])},
+        )
+        return response.get("blocked_remote_actions", [])
+
+
 class SamplesAPI(HTTPRequester):
 
     __sub_url = "sensor/samples"
@@ -490,5 +505,5 @@ class DefaultsAPI(HTTPRequester):
 class ColorsensorAPI(DetectablesAPI, DefaultsAPI, DetectionProfilesAPI, EmitterAPI, MatcherAPI,
                      NetworkAPI, SamplesAPI, SystemAPI, DeviceAPI, CapabilitiesAPI, UserAPI,
                      ColorspacesAPI, KeypadAPI, SettingsAPI, FirmwareAPI, OutputsAPI,
-                     PeripheralsAPI, ActionTriggersAPI):
+                     PeripheralsAPI, ActionTriggersAPI, AccessAPI):
     """API Client for all features of a colorsensor"""
