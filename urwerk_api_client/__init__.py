@@ -22,9 +22,11 @@ class APIAuthorizationError(APIRequestError):
     are not sufficient """
 
 
-def _handle_request(url, method, data, headers, handler):
+def _handle_request(url, method, data, headers, handler, user_agent=None):
     if headers is None:
         headers = {}
+    if (user_agent is not None) and ("User-Agent" not in headers):
+        headers["User-Agent"] = user_agent
     # Todo: correctly accept a 'permanently moved' (e.g. 301) status code
     request = urllib.request.Request(url=url, method=method, data=data, headers=headers)
     try:
@@ -67,8 +69,9 @@ def _handle_request(url, method, data, headers, handler):
 
 
 class HTTPRequester:
-    def __init__(self, api_url):
+    def __init__(self, api_url, user_agent=None):
         self.root_url = api_url
+        self._user_agent = user_agent if user_agent else "urwerk-api-client/{}".format(VERSION)
 
     def _get_url(self, url, params):
         if isinstance(url, tuple):
@@ -115,14 +118,15 @@ class HTTPRequester:
         def handler(res, unpacker):
             return unpacker(res.read())
 
-        return _handle_request(url, method, data, headers, handler)
+        return _handle_request(url, method, data, headers, handler, user_agent=self._user_agent)
 
     def _stream_response(self, url, method, data, headers=None):
         def handler(res, unpacker):
             for data in res:
                 yield unpacker(data)
 
-        yield from _handle_request(url, method, data, headers, handler)
+        yield from _handle_request(
+            url, method, data, headers, handler, user_agent=self._user_agent)
 
 
 class IPProtocol(enum.Enum):
