@@ -70,7 +70,7 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
 
 class HTTPRequester:
     def __init__(self, api_url, user_agent=None):
-        self.root_url = api_url
+        self.root_url = api_url.rstrip("/")
         self._user_agent = user_agent if user_agent else "urwerk-api-client/{}".format(VERSION)
 
     def _get_url(self, url, params):
