@@ -75,6 +75,9 @@ class HTTPRequester:
         self.root_url = api_url.rstrip("/")
         self._user_agent = user_agent if user_agent else "urwerk-api-client/{}".format(VERSION)
 
+    def get_user_agent(self):
+        return self._user_agent
+
     def _get_url(self, url, params):
         if isinstance(url, tuple):
             url = "/".join(url)
