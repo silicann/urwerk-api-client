@@ -1,5 +1,6 @@
 from base64 import encodebytes
 import enum
+import functools
 import http.client
 import json
 import urllib.error
@@ -20,6 +21,22 @@ class APIAuthenticationError(APIRequestError):
 class APIAuthorizationError(APIRequestError):
     """ raised in case an action requires authentication and the provided credentials
     are not sufficient """
+
+
+def encode_data():
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, data=None, headers=None, **kwargs):
+            if data:
+                headers = dict(headers) if headers is not None else {}
+                if isinstance(data, bytes):
+                    headers.setdefault("Content-Type", "application/octet-stream")
+                else:
+                    headers.setdefault("Content-Type", "application/json")
+                    data = json.dumps(data).encode("UTF-8")
+            return func(*args, data=data, headers=headers, **kwargs)
+        return wrapper
+    return decorator
 
 
 def _handle_request(url, method, data, headers, handler, user_agent=None):
@@ -102,18 +119,15 @@ class HTTPRequester:
         return (handler or self._get_response)(
             self._get_url(url, params), "GET", None, headers=headers)
 
+    @encode_data()
     def _put(self, url=None, data=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_url(url, None), "PUT", json.dumps(data).encode("utf-8"), headers=headers)
+            self._get_url(url, None), "PUT", data, headers=headers)
 
+    @encode_data()
     def _post(self, url=None, data=None, headers=None, handler=None):
-        if data:
-            if headers:
-                headers.update({"Content-Type": "application/json"})
-            else:
-                headers = {"Content-Type": "application/json"}
         return (handler or self._get_response)(
-            self._get_url(url, None), "POST", json.dumps(data).encode("utf-8"), headers=headers)
+            self._get_url(url, None), "POST", data, headers=headers)
 
     def _delete(self, url=None, params=None, headers=None, handler=None):
         return (handler or self._get_response)(
