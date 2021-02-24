@@ -40,12 +40,9 @@ def encode_data():
 
 
 def _handle_request(url, method, data, headers, handler, user_agent=None):
-    if headers is None:
-        headers = {}
-    else:
-        headers = dict(headers)
-    if (user_agent is not None) and ("User-Agent" not in headers):
-        headers["User-Agent"] = user_agent
+    headers = dict(headers) if headers is not None else {}
+    if user_agent is not None:
+        headers.setdefault("User-Agent", user_agent)
     # Todo: correctly accept a 'permanently moved' (e.g. 301) status code
     request = urllib.request.Request(url=url, method=method, data=data, headers=headers)
     try:
