@@ -13,6 +13,10 @@ VERSION = "0.17.1"
 class APIRequestError(IOError):
     """ exceptions raised by API requests """
 
+    def __init__(self, msg, status_code=None):
+        super().__init__(msg)
+        self.status_code = status_code
+
 
 class APIAuthenticationError(APIRequestError):
     """ raised in case an action is only available after authentication """
@@ -53,7 +57,8 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
             401: APIAuthenticationError,
             403: APIAuthorizationError
         }.get(exc.code, APIRequestError)
-        raise error_type("API Error ({} -> {}): {}".format(url, exc, error_body)) from exc
+        raise error_type("API Error ({} -> {}): {}"
+                         .format(url, exc, error_body), exc.code) from exc
     except urllib.error.URLError as exc:
         raise APIRequestError("API Connect Error ({}): {}".format(url, exc)) from exc
     else:
@@ -79,9 +84,10 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
         elif response.status == http.client.NO_CONTENT:
             return None
         else:
-            raise APIRequestError("API status error ({} -> {} ({})): {}"
-                                  .format(url, http.client.responses[response.status],
-                                          response.status, response.read()))
+            msg = ("API status error ({} -> {} ({})): {}"
+                   .format(url, http.client.responses[response.status],
+                           response.status, response.read()))
+            raise APIRequestError(msg, response.status)
 
 
 class HTTPRequester:
