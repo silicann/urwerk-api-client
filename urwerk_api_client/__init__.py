@@ -13,9 +13,33 @@ VERSION = "0.18.0"
 class APIRequestError(IOError):
     """ exceptions raised by API requests """
 
-    def __init__(self, msg, status_code=None):
-        super().__init__(msg)
+    class ServerError:
+        def __init__(self, message: str, mapping: str = None, code: str = None):
+            self.message = message
+            self.mapping = mapping
+            self.code = code
+
+    def __init__(self, *args, error_body: bytes = None, status_code: int = None):
+        super().__init__(*args)
+        self.error_body = error_body
         self.status_code = status_code
+
+    def get_embedded_errors(self):
+        if self.error_body is not None:
+            try:
+                errors = json.loads(self.error_body.decode())["errors"]
+            except (UnicodeError, json.JSONDecodeError, KeyError):
+                pass
+            else:
+                for error in errors:
+                    if isinstance(error, str):
+                        yield self.ServerError(error)
+                    elif isinstance(error, dict):
+                        yield self.ServerError(
+                            error["message"],
+                            error.get("mapping", None),
+                            error.get("code", None),
+                        )
 
 
 class APIAuthenticationError(APIRequestError):
@@ -57,8 +81,11 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
             401: APIAuthenticationError,
             403: APIAuthorizationError
         }.get(exc.code, APIRequestError)
-        raise error_type("API Error ({} -> {}): {}"
-                         .format(url, exc, error_body), exc.code) from exc
+        raise error_type(
+            "API Error ({} -> {}): {}".format(url, exc, error_body),
+            error_body=error_body,
+            status_code=exc.code,
+        ) from exc
     except urllib.error.URLError as exc:
         raise APIRequestError("API Connect Error ({}): {}".format(url, exc)) from exc
     else:
@@ -87,7 +114,7 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
             msg = ("API status error ({} -> {} ({})): {}"
                    .format(url, http.client.responses[response.status],
                            response.status, response.read()))
-            raise APIRequestError(msg, response.status)
+            raise APIRequestError(msg, status_code=response.status)
 
 
 class HTTPRequester:
