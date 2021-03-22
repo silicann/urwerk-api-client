@@ -94,6 +94,9 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
             if not content:
                 # responses are never supposed to be empty
                 raise APIRequestError("API Empty Response Error: {}".format(url))
+            if response.headers.get("Content-Type") == "text/plain":
+                # used for the blickwerk settings dump
+                return content
             json_string = json.loads(content)
             # The ddb does not send "errors" (yet?)
             if "errors" in json_string.keys() and json_string["errors"]:
