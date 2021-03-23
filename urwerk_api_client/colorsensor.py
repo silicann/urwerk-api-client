@@ -145,8 +145,8 @@ class PeripheralsAPI(HTTPRequester):
     def get_rs232_baud_rate(self):
         return self._get(url=(self.__sub_url, "rs232"))["baud_rate"]
 
-    def set_rs232_baudrate(self, baud_rate):
-        return self._get(url=(self.__sub_url, "rs232"), data={"baud_rate": baud_rate})
+    def set_rs232_baud_rate(self, baud_rate):
+        return self._put(url=(self.__sub_url, "rs232"), data={"baud_rate": baud_rate})
 
     def get_rs232_protocol(self):
         return self._get(url=(self.__sub_url, "rs232"))["protocol"]
