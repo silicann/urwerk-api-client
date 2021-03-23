@@ -1,4 +1,7 @@
+import base64
 from functools import lru_cache
+import json
+import urllib.parse
 
 from urwerk_api_client import HTTPRequester, IPProtocol
 
@@ -27,8 +30,22 @@ class SettingsAPI(HTTPRequester):
 
     __sub_url = "settings"
 
-    def settings_reset(self):
+    def get_settings(self):
+        raw = self._get(url=self.__sub_url)
+        return json.loads(base64.b64decode(raw))
+
+    def reset_settings(self):
         return self._delete(url=self.__sub_url)
+
+    def set_settings(self, settings, categories=None):
+        raw = base64.b64encode(json.dumps(settings).encode())
+        if categories is not None:
+            query_args = {"import_category_{}".format(category): "1" for category in categories}
+        else:
+            query_args = None
+        return self._put(url=self.__sub_url, params=query_args, data=raw)
+
+    settings_reset = reset_settings
 
 
 class SystemAPI(HTTPRequester):
