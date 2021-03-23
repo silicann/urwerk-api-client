@@ -153,14 +153,14 @@ class HTTPRequester:
             self._get_url(url, params), "GET", None, headers=headers)
 
     @encode_data()
-    def _put(self, url=None, data=None, headers=None, handler=None):
+    def _put(self, url=None, params=None, data=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_url(url, None), "PUT", data, headers=headers)
+            self._get_url(url, params), "PUT", data, headers=headers)
 
     @encode_data()
-    def _post(self, url=None, data=None, headers=None, handler=None):
+    def _post(self, url=None, params=None, data=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_url(url, None), "POST", data, headers=headers)
+            self._get_url(url, params), "POST", data, headers=headers)
 
     def _delete(self, url=None, params=None, headers=None, handler=None):
         return (handler or self._get_response)(
