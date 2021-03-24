@@ -32,7 +32,7 @@ class SettingsAPI(HTTPRequester):
 
     def get_settings(self):
         raw = self._get(url=self.__sub_url)
-        return json.loads(base64.b64decode(raw))
+        return json.loads(base64.b64decode(raw.encode()).decode())
 
     def reset_settings(self):
         return self._delete(url=self.__sub_url)

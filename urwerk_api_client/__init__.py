@@ -71,6 +71,9 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
     headers = dict(headers) if headers is not None else {}
     if user_agent is not None:
         headers.setdefault("User-Agent", user_agent)
+    if isinstance(data, dict):
+        # python3.5 does not accept a dict
+        data = json.dumps(data).encode()
     # Todo: correctly accept a 'permanently moved' (e.g. 301) status code
     request = urllib.request.Request(url=url, method=method, data=data, headers=headers)
     try:
