@@ -1,7 +1,6 @@
 import base64
 from functools import lru_cache
 import json
-import urllib.parse
 
 from urwerk_api_client import HTTPRequester, IPProtocol
 
