@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: urwerk-api-client
-Source: http://gitlab.neusy/urwerk/urwerk-api-client
+Source: https://gitlab.silicann.systems/urwerk/urwerk-api-client.git
 
 Files: *
 Copyright: 2017 Lars Kruse <kruse@silicann.com>
