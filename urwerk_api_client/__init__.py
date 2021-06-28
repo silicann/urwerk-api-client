@@ -7,7 +7,7 @@ import urllib.error
 from urllib.parse import urlencode
 import urllib.request
 
-VERSION = "0.19.0"
+__version__ = "0.19.0"
 
 
 class APIRequestError(IOError):
@@ -126,7 +126,7 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
 class HTTPRequester:
     def __init__(self, api_url, user_agent=None):
         self.root_url = api_url.rstrip("/")
-        self._user_agent = user_agent if user_agent else "urwerk-api-client/{}".format(VERSION)
+        self._user_agent = user_agent if user_agent else "urwerk-api-client/{}".format(__version__)
 
     def get_user_agent(self):
         return self._user_agent

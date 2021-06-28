@@ -2,12 +2,12 @@
 
 from setuptools import setup
 
-from urwerk_api_client import VERSION
+from urwerk_api_client import __version__
 
 
 setup(
     name="urwerk_api_client",
-    version=VERSION,
+    version=__version__,
     description="Urwerk API Client",
     long_description="Easily access the REST API of device based on the 'Urwerk' platform",
     url="ssh://git@git.neusy/urwerk_api_client.git",
