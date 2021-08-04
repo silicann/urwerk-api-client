@@ -11,7 +11,7 @@ __version__ = "0.19.0"
 
 
 class APIRequestError(IOError):
-    """ exceptions raised by API requests """
+    """exceptions raised by API requests"""
 
     class ServerError:
         def __init__(self, message: str, mapping: str = None, code: str = None):
@@ -43,12 +43,12 @@ class APIRequestError(IOError):
 
 
 class APIAuthenticationError(APIRequestError):
-    """ raised in case an action is only available after authentication """
+    """raised in case an action is only available after authentication"""
 
 
 class APIAuthorizationError(APIRequestError):
-    """ raised in case an action requires authentication and the provided credentials
-    are not sufficient """
+    """raised in case an action requires authentication and the provided credentials
+    are not sufficient"""
 
 
 def encode_data():
@@ -63,7 +63,9 @@ def encode_data():
                     headers.setdefault("Content-Type", "application/json")
                     data = json.dumps(data).encode("UTF-8")
             return func(*args, data=data, headers=headers, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -80,10 +82,11 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
         response = urllib.request.urlopen(request)
     except urllib.error.HTTPError as exc:
         error_body = exc.fp.read()
-        error_type = {
+        error_types = {
             401: APIAuthenticationError,
-            403: APIAuthorizationError
-        }.get(exc.code, APIRequestError)
+            403: APIAuthorizationError,
+        }
+        error_type = error_types.get(exc.code, APIRequestError)
         raise error_type(
             "API Error ({} -> {}): {}".format(url, exc, error_body),
             error_body=error_body,
@@ -92,6 +95,7 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
     except urllib.error.URLError as exc:
         raise APIRequestError("API Connect Error ({}): {}".format(url, exc)) from exc
     else:
+
         def unpack_data(data):
             content = data.decode("utf-8")
             if not content:
@@ -103,8 +107,9 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
             json_string = json.loads(content)
             # The ddb does not send "errors" (yet?)
             if "errors" in json_string.keys() and json_string["errors"]:
-                raise APIRequestError("JSON encode error: {0} -> {1}"
-                                      .format(url, json_string["errors"]))
+                raise APIRequestError(
+                    "JSON encode error: {0} -> {1}".format(url, json_string["errors"])
+                )
             if "results" in json_string.keys():  # ddb
                 return json_string["results"]
             elif "data" in json_string.keys():  # schall, colorsensor
@@ -117,16 +122,21 @@ def _handle_request(url, method, data, headers, handler, user_agent=None):
         elif response.status == http.client.NO_CONTENT:
             return None
         else:
-            msg = ("API status error ({} -> {} ({})): {}"
-                   .format(url, http.client.responses[response.status],
-                           response.status, response.read()))
+            msg = "API status error ({} -> {} ({})): {}".format(
+                url,
+                http.client.responses[response.status],
+                response.status,
+                response.read(),
+            )
             raise APIRequestError(msg, status_code=response.status)
 
 
 class HTTPRequester:
     def __init__(self, api_url, user_agent=None):
         self.root_url = api_url.rstrip("/")
-        self._user_agent = user_agent if user_agent else "urwerk-api-client/{}".format(__version__)
+        self._user_agent = (
+            user_agent if user_agent else "urwerk-api-client/{}".format(__version__)
+        )
 
     def get_user_agent(self):
         return self._user_agent
@@ -145,7 +155,9 @@ class HTTPRequester:
         return self.root_url + path
 
     def _get_auth_header(self, user, password):
-        __secret = encodebytes("{}:{}".format(user, password).replace('\n', '').encode())
+        __secret = encodebytes(
+            "{}:{}".format(user, password).replace("\n", "").encode()
+        )
         return {"Authorization": "Basic {}".format(__secret.decode()).strip()}
 
     def _get_token_auth_header(self, token):
@@ -153,27 +165,33 @@ class HTTPRequester:
 
     def _get(self, url=None, params=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_url(url, params), "GET", None, headers=headers)
+            self._get_url(url, params), "GET", None, headers=headers
+        )
 
     @encode_data()
     def _put(self, url=None, params=None, data=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_url(url, params), "PUT", data, headers=headers)
+            self._get_url(url, params), "PUT", data, headers=headers
+        )
 
     @encode_data()
     def _post(self, url=None, params=None, data=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_url(url, params), "POST", data, headers=headers)
+            self._get_url(url, params), "POST", data, headers=headers
+        )
 
     def _delete(self, url=None, params=None, headers=None, handler=None):
         return (handler or self._get_response)(
-            self._get_url(url, params), "DELETE", None, headers=headers)
+            self._get_url(url, params), "DELETE", None, headers=headers
+        )
 
     def _get_response(self, url, method, data, headers=None):
         def handler(res, unpacker):
             return unpacker(res.read())
 
-        return _handle_request(url, method, data, headers, handler, user_agent=self._user_agent)
+        return _handle_request(
+            url, method, data, headers, handler, user_agent=self._user_agent
+        )
 
     def _stream_response(self, url, method, data, headers=None):
         def handler(res, unpacker):
@@ -181,12 +199,13 @@ class HTTPRequester:
                 yield unpacker(data)
 
         yield from _handle_request(
-            url, method, data, headers, handler, user_agent=self._user_agent)
+            url, method, data, headers, handler, user_agent=self._user_agent
+        )
 
 
 class IPProtocol(enum.Enum):
-    v4 = ('ipv4', 4, 'IPv4')
-    v6 = ('ipv6', 6, 'IPv6')
+    v4 = ("ipv4", 4, "IPv4")
+    v6 = ("ipv6", 6, "IPv6")
 
     @property
     def id(self):

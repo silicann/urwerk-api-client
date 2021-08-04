@@ -13,16 +13,16 @@ class SpectralAPI(HTTPRequester):
         return self.get_detection_profile_by_uuid(profile_id)["sampling_settings"]
 
     def get_spectrum(self):
-        """ returns array of [wavelength, measured value] """
+        """returns array of [wavelength, measured value]"""
         return self._get_spectral_sample()["spectrum"]
 
     def get_spectrum_dict(self):
-        """ returns array of point-dictionaries: [{"wavelength": 100.0, "value": 0.01}, ...] """
+        """returns array of point-dictionaries: [{"wavelength": 100.0, "value": 0.01}, ...]"""
         spectrum = self.get_spectrum()
         return [{"wavelength": point[0], "value": point[1]} for point in spectrum]
 
     def get_wavelengths(self):
-        """ returns array of used wavelengths """
+        """returns array of used wavelengths"""
         return self._get(url=(self.__sub_url, "wavelengths"))["wavelengths"]
 
     def reset_spectral_dark_reference(self):
@@ -82,4 +82,4 @@ class SpectralAPI(HTTPRequester):
 
 
 class SpectralImagerAPI(SpectralAPI, ColorsensorAPI):
-    """ API Client for some features of a spectral imager """
+    """API Client for some features of a spectral imager"""

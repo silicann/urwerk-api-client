@@ -39,7 +39,9 @@ class SettingsAPI(HTTPRequester):
     def set_settings(self, settings, categories=None):
         raw = base64.b64encode(json.dumps(settings).encode())
         if categories is not None:
-            query_args = {"import_category_{}".format(category): "1" for category in categories}
+            query_args = {
+                "import_category_{}".format(category): "1" for category in categories
+            }
         else:
             query_args = None
         return self._put(url=self.__sub_url, params=query_args, data=raw)
@@ -119,8 +121,9 @@ class NetworkAPI(HTTPRequester):
         return self._get(url=(self.__sub_url, "interfaces", name))
 
     def set_network_interface_address_in_domain(
-            self, iface: str, protocol: IPProtocol, configuration):
-        """ reconfigure the address configurations of an interface in the given domain
+        self, iface: str, protocol: IPProtocol, configuration
+    ):
+        """reconfigure the address configurations of an interface in the given domain
 
         The other IP protocol configuration remains unchanged.
         Changes are applied immediately.
@@ -130,8 +133,7 @@ class NetworkAPI(HTTPRequester):
         @param configuration: the new configuration for this network interface and IP protocol
         """
         data = {protocol.id: {"address_configurations": configuration}}
-        return self._put(url=(self.__sub_url, "interfaces", iface),
-                         data=data)
+        return self._put(url=(self.__sub_url, "interfaces", iface), data=data)
 
     def reset_network_settings_to_defaults(self):
         return self._delete(url=self.__sub_url)
@@ -166,10 +168,10 @@ class OutputsAPI(HTTPRequester):
 
     def set_output_mode(self, mode):
         data = {"output_driver": mode}
-        return self._put(url=self.__sub_url, data=data)['output_driver']
+        return self._put(url=self.__sub_url, data=data)["output_driver"]
 
     def get_output_mode(self):
-        return self._get(url=self.__sub_url)['output_driver']
+        return self._get(url=self.__sub_url)["output_driver"]
 
 
 class KeypadAPI(HTTPRequester):
@@ -279,8 +281,14 @@ class DetectionProfilesAPI(HTTPRequester):
     def delete_detection_profile(self, any_id):
         return self._delete(url=(self.__sub_url, str(any_id)))
 
-    def run_autogain(self, minimum_sample_rate=None, target_level=None, averages=None,
-                     enable_internal_emitter=None, enable_ambient_light_compensation=None):
+    def run_autogain(
+        self,
+        minimum_sample_rate=None,
+        target_level=None,
+        averages=None,
+        enable_internal_emitter=None,
+        enable_ambient_light_compensation=None,
+    ):
         params = {}
         if minimum_sample_rate is not None:
             params["minimum_sample_rate"] = minimum_sample_rate
@@ -291,7 +299,9 @@ class DetectionProfilesAPI(HTTPRequester):
         if enable_internal_emitter is not None:
             params["enable_internal_emitter"] = enable_internal_emitter
         if enable_ambient_light_compensation is not None:
-            params["enable_ambient_light_compensation"] = enable_ambient_light_compensation
+            params[
+                "enable_ambient_light_compensation"
+            ] = enable_ambient_light_compensation
         return self._post(url=(self.__sub_url, "current", "autogain"), data=params)
 
     def set_white_reference(self, profile_id="current"):
@@ -301,7 +311,7 @@ class DetectionProfilesAPI(HTTPRequester):
         self._delete(url=(self.__sub_url, profile_id, "white-reference"))
 
     def get_profile_normalization_constants(self, profile_id="current"):
-        """ Get normalization constants used in the given detection profile.
+        """Get normalization constants used in the given detection profile.
 
         The result can be different from the result of the get_factory_calibration_constants()
         function from the ConstantsMaintenanceAPI, that returns the normalization constants stored
@@ -310,19 +320,19 @@ class DetectionProfilesAPI(HTTPRequester):
         return self._get(url=(self.__sub_url, profile_id))["normalization_constant"]
 
     def enable_compensation(self, profile_id="current"):
-        """ Enable the transformation of colorvalues to reduce inter-sensor variability for the
+        """Enable the transformation of colorvalues to reduce inter-sensor variability for the
         given profile.
 
         Application of the transformation of colorvalues requires the availability of
-        sensor-specific constants on the device. """
-        params = {'compensation_settings': {'use_calibration_samples': True}}
+        sensor-specific constants on the device."""
+        params = {"compensation_settings": {"use_calibration_samples": True}}
         return self._put(url=(self.__sub_url, profile_id), data=params)
 
     def disable_compensation(self, profile_id="current"):
-        """ Disable the transformation of colorvalues to reduce inter-sensor variability for the
+        """Disable the transformation of colorvalues to reduce inter-sensor variability for the
         given profile."""
 
-        params = {'compensation_settings': {'use_calibration_samples': False}}
+        params = {"compensation_settings": {"use_calibration_samples": False}}
         return self._put(url=(self.__sub_url, profile_id), data=params)
 
 
@@ -331,7 +341,7 @@ class DetectablesAPI(HTTPRequester):
     __sub_url = "sensor/detectables"
 
     def get_detectables(self, profile=None, matcher_id=None):
-        """ return all detectables sorted by UUID """
+        """return all detectables sorted by UUID"""
         params = {}
         if profile is not None:
             params["profile_id"] = profile
@@ -397,7 +407,7 @@ class MatcherAPI(HTTPRequester):
     __sub_url = "sensor/matchers"
 
     def get_matchers(self, profile=None):
-        """ return all matchers sorted by UUID """
+        """return all matchers sorted by UUID"""
         params = None if profile is None else {"profile_id": profile}
         matchers = self._get(url=self.__sub_url, params=params)["matchers"]
         matchers.sort(key=lambda item: item["uuid"])
@@ -430,7 +440,7 @@ class MatcherAPI(HTTPRequester):
         return self._delete(url=self.__sub_url)
 
     def set_matcher_output_pattern(self, any_id, pattern):
-        data = {'output_pattern': {'states': pattern}}
+        data = {"output_pattern": {"states": pattern}}
         return self._put(url=(self.__sub_url, str(any_id)), data=data)
 
     def get_matcher_output_pattern(self, any_id):
@@ -462,12 +472,14 @@ class SamplesAPI(HTTPRequester):
     def get_sample_stream(self, count=None, format=None, delimiter=None):
         params = dict(stream=1)
         if count:
-            params['stream_count'] = count
+            params["stream_count"] = count
         if format:
-            params['format'] = format
+            params["format"] = format
         if delimiter:
-            params['delimiter'] = delimiter
-        yield from self._get(url=self.__sub_url, params=params, handler=self._stream_response)
+            params["delimiter"] = delimiter
+        yield from self._get(
+            url=self.__sub_url, params=params, handler=self._stream_response
+        )
 
 
 class ColorspacesAPI(HTTPRequester):
@@ -478,8 +490,9 @@ class ColorspacesAPI(HTTPRequester):
         return self.get_current_detection_profile()["colorspace"]
 
     def set_colorspace(self, colorspace_id):
-        return self.change_detection_profile("current",
-                                             {"colorspace": {"space_id": colorspace_id}})
+        return self.change_detection_profile(
+            "current", {"colorspace": {"space_id": colorspace_id}}
+        )
 
     @lru_cache()
     def get_colorspaces(self):
@@ -493,17 +506,20 @@ class DefaultsAPI(HTTPRequester):
     __sub_url = "defaults"
 
     def set_default(self, object_type, key, value):
-        self._post(self.__sub_url, data={
-            'object_type': object_type,
-            'key': key,
-            'value': value
-        })
+        self._post(
+            self.__sub_url,
+            data={
+                "object_type": object_type,
+                "key": key,
+                "value": value,
+            },
+        )
 
     def get_defaults(self):
-        return self._get(self.__sub_url)['defaults']
+        return self._get(self.__sub_url)["defaults"]
 
     def get_factory_defaults(self):
-        return self._get(self.__sub_url)['factory_defaults']
+        return self._get(self.__sub_url)["factory_defaults"]
 
     def get_default(self, object_type, key):
         def _find(*collections, test):
@@ -511,12 +527,34 @@ class DefaultsAPI(HTTPRequester):
                 for obj in collection():
                     if test(obj):
                         return obj
-        return _find(self.get_defaults, self.get_factory_defaults,
-                     test=lambda d, o=object_type, k=key: d['object_type'] == o and d['key'] == k)
+
+        return _find(
+            self.get_defaults,
+            self.get_factory_defaults,
+            test=lambda d, o=object_type, k=key: d["object_type"] == o
+            and d["key"] == k,
+        )
 
 
-class ColorsensorAPI(DetectablesAPI, DefaultsAPI, DetectionProfilesAPI, EmitterAPI, MatcherAPI,
-                     NetworkAPI, SamplesAPI, SystemAPI, DeviceAPI, CapabilitiesAPI, UserAPI,
-                     ColorspacesAPI, KeypadAPI, SettingsAPI, FirmwareAPI, OutputsAPI,
-                     PeripheralsAPI, ActionTriggersAPI, AccessAPI):
+class ColorsensorAPI(
+    DetectablesAPI,
+    DefaultsAPI,
+    DetectionProfilesAPI,
+    EmitterAPI,
+    MatcherAPI,
+    NetworkAPI,
+    SamplesAPI,
+    SystemAPI,
+    DeviceAPI,
+    CapabilitiesAPI,
+    UserAPI,
+    ColorspacesAPI,
+    KeypadAPI,
+    SettingsAPI,
+    FirmwareAPI,
+    OutputsAPI,
+    PeripheralsAPI,
+    ActionTriggersAPI,
+    AccessAPI,
+):
     """API Client for all features of a colorsensor"""
