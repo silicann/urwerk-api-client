@@ -1,4 +1,5 @@
 from base64 import encodebytes
+import contextlib
 import enum
 import functools
 import http.client
@@ -72,7 +73,7 @@ def encode_data():
 
 @contextlib.contextmanager
 def modified_http_connection_receive_buffer_size(size):
-    """ Reduce the receive buffer size of the socket used by the http.client
+    """Reduce the receive buffer size of the socket used by the http.client
 
     Override socket.create_connection, which is used in HTTPConnection.__init__ for creating the
     network socket.
@@ -84,7 +85,7 @@ def modified_http_connection_receive_buffer_size(size):
         s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, size)
         return s
 
-    socket.create_connection = _customized
+    socket.create_connection = customized_create_connection
     try:
         yield
     finally:
