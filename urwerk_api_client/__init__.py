@@ -3,6 +3,7 @@ import enum
 import functools
 import http.client
 import json
+import socket
 import urllib.error
 from urllib.parse import urlencode
 import urllib.request
@@ -67,6 +68,27 @@ def encode_data():
         return wrapper
 
     return decorator
+
+
+@contextlib.contextmanager
+def modified_http_connection_receive_buffer_size(size):
+    """ Reduce the receive buffer size of the socket used by the http.client
+
+    Override socket.create_connection, which is used in HTTPConnection.__init__ for creating the
+    network socket.
+    """
+    original_create_connection = socket.create_connection
+
+    def customized_create_connection(*args, **kwargs):
+        s = original_create_connection(*args, **kwargs)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, size)
+        return s
+
+    socket.create_connection = _customized
+    try:
+        yield
+    finally:
+        socket.create_connection = original_create_connection
 
 
 def _handle_request(url, method, data, headers, handler, user_agent=None):
@@ -198,9 +220,13 @@ class HTTPRequester:
             for data in res:
                 yield unpacker(data)
 
-        yield from _handle_request(
-            url, method, data, headers, handler, user_agent=self._user_agent
-        )
+        # Reduce the receive buffer size.  Otherwise we cannot induce backpressure in a streaming
+        # situation.  Thus the sender would stream outdated content into the buffer, before
+        # noticing, that the data is not processed quickly enough.
+        with modified_http_connection_receive_buffer_size(3000):
+            yield from _handle_request(
+                url, method, data, headers, handler, user_agent=self._user_agent
+            )
 
 
 class IPProtocol(enum.Enum):
