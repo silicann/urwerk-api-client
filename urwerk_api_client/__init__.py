@@ -9,7 +9,7 @@ import urllib.error
 from urllib.parse import urlencode
 import urllib.request
 
-__version__ = "0.19.0"
+__version__ = "0.20.0"
 
 
 class APIRequestError(IOError):
