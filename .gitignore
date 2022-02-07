@@ -13,4 +13,4 @@ debian/tmp/
 debian/*.debhelper.log
 debian/*.debhelper
 debian/*.substvars
-debian/urwerk-api-client/
+debian/python3-urwerk-api-client/
