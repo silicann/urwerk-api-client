@@ -272,7 +272,7 @@ class DetectionProfilesAPI(HTTPRequester):
     # for backwards compatibility
     get_detection_profile_by_uuid = get_detection_profile
 
-    def post_detection_profile(self, data):
+    def post_detection_profile(self, data=None):
         return self._post(url=self.__sub_url, data=data)
 
     def change_detection_profile(self, any_id, data):
