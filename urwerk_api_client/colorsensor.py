@@ -388,15 +388,13 @@ class DetectablesAPI(HTTPRequester):
 
     def post_detectable(self, profile=None, data=None):
         data = {} if data is None else dict(data)
-        if profile is not None:
-            data["profile_id"] = profile
-        return self._post(url=self.__sub_url, data=data)
+        params = None if profile is None else {"profile_id": profile}
+        return self._post(url=self.__sub_url, params=params, data=data)
 
     def change_detectable(self, any_id, data, profile=None):
         data = {} if data is None else dict(data)
-        if profile is not None:
-            data["profile_id"] = profile
-        return self._put(url=(self.__sub_url, str(any_id)), data=data)
+        params = None if profile is None else {"profile_id": profile}
+        return self._put(url=(self.__sub_url, str(any_id)), params=params, data=data)
 
     def delete_detectable(self, any_id, profile=None):
         params = {} if profile is None else {"profile_id": profile}
@@ -450,15 +448,13 @@ class MatcherAPI(HTTPRequester):
 
     def post_matcher(self, profile=None, data=None):
         data = {} if data is None else dict(data)
-        if profile is not None:
-            data["profile_id"] = profile
-        return self._post(url=self.__sub_url, data=data)
+        params = None if profile is None else {"profile_id": profile}
+        return self._post(url=self.__sub_url, params=params, data=data)
 
     def change_matcher(self, any_id, data, profile=None):
         data = {} if data is None else dict(data)
-        if profile is not None:
-            data["profile_id"] = profile
-        return self._put(url=(self.__sub_url, str(any_id)), data=data)
+        params = None if profile is None else {"profile_id": profile}
+        return self._put(url=(self.__sub_url, str(any_id)), params=params, data=data)
 
     def delete_matcher(self, any_id, profile=None):
         params = {} if profile is None else {"profile_id": profile}
