@@ -299,6 +299,7 @@ class DetectionProfilesAPI(HTTPRequester):
         averages=None,
         enable_internal_emitter=None,
         enable_ambient_light_compensation=None,
+        profile="current",
     ):
         params = {}
         if minimum_sample_rate is not None:
@@ -313,38 +314,54 @@ class DetectionProfilesAPI(HTTPRequester):
             params[
                 "enable_ambient_light_compensation"
             ] = enable_ambient_light_compensation
-        return self._post(url=(self.__sub_url, "current", "autogain"), data=params)
+        return self._post(url=(self.__sub_url, str(profile), "autogain"), data=params)
 
-    def set_white_reference(self, profile_id="current"):
-        self._post(url=(self.__sub_url, profile_id, "white-reference"))
+    def set_white_reference(self, profile_id="current", profile=None):
+        # TODO: remove the deprecated "profile_id" argument
+        if profile is None:
+            profile = profile_id
+        self._post(url=(self.__sub_url, str(profile), "white-reference"))
 
-    def factory_reset_white_reference(self, profile_id="current"):
-        self._delete(url=(self.__sub_url, profile_id, "white-reference"))
+    def factory_reset_white_reference(self, profile_id="current", profile=None):
+        # TODO: remove the deprecated "profile_id" argument
+        if profile is None:
+            profile = profile_id
+        self._delete(url=(self.__sub_url, str(profile), "white-reference"))
 
-    def get_profile_normalization_constants(self, profile_id="current"):
+    def get_profile_normalization_constants(self, profile_id="current", profile=None):
         """Get normalization constants used in the given detection profile.
 
         The result can be different from the result of the get_factory_calibration_constants()
         function from the ConstantsMaintenanceAPI, that returns the normalization constants stored
         in EEPROM.
         """
-        return self._get(url=(self.__sub_url, profile_id))["normalization_constant"]
+        # TODO: remove the deprecated "profile_id" argument
+        if profile is None:
+            profile = profile_id
+        return self._get(url=(self.__sub_url, str(profile)))["normalization_constant"]
 
-    def enable_compensation(self, profile_id="current"):
+    def enable_compensation(self, profile_id="current", profile=None):
         """Enable the transformation of colorvalues to reduce inter-sensor variability for the
         given profile.
 
         Application of the transformation of colorvalues requires the availability of
-        sensor-specific constants on the device."""
+        sensor-specific constants on the device.
+        """
+        # TODO: remove the deprecated "profile_id" argument
+        if profile is None:
+            profile = profile_id
         params = {"compensation_settings": {"use_calibration_samples": True}}
-        return self._put(url=(self.__sub_url, profile_id), data=params)
+        return self._put(url=(self.__sub_url, str(profile)), data=params)
 
-    def disable_compensation(self, profile_id="current"):
+    def disable_compensation(self, profile_id="current", profile=None):
         """Disable the transformation of colorvalues to reduce inter-sensor variability for the
-        given profile."""
-
+        given profile.
+        """
+        # TODO: remove the deprecated "profile_id" argument
+        if profile is None:
+            profile = profile_id
         params = {"compensation_settings": {"use_calibration_samples": False}}
-        return self._put(url=(self.__sub_url, profile_id), data=params)
+        return self._put(url=(self.__sub_url, str(profile)), data=params)
 
 
 class DetectablesAPI(HTTPRequester):
@@ -447,15 +464,18 @@ class MatcherAPI(HTTPRequester):
         params = {} if profile is None else {"profile_id": profile}
         return self._delete(url=(self.__sub_url, str(any_id)), params=params)
 
-    def delete_matchers(self):
-        return self._delete(url=self.__sub_url)
+    def delete_matchers(self, profile=None):
+        params = None if profile is None else {"profile_id": profile}
+        return self._delete(url=self.__sub_url, params=params)
 
-    def set_matcher_output_pattern(self, any_id, pattern):
+    def set_matcher_output_pattern(self, any_id, pattern, profile=None):
         data = {"output_pattern": {"states": pattern}}
-        return self._put(url=(self.__sub_url, str(any_id)), data=data)
+        params = None if profile is None else {"profile_id": profile}
+        return self._put(url=(self.__sub_url, str(any_id)), params=params, data=data)
 
-    def get_matcher_output_pattern(self, any_id):
-        return self._get(url=(self.__sub_url, str(any_id)))
+    def get_matcher_output_pattern(self, any_id, profile=None):
+        params = None if profile is None else {"profile_id": profile}
+        return self._get(url=(self.__sub_url, str(any_id)), params=params)
 
 
 class AccessAPI(HTTPRequester):
