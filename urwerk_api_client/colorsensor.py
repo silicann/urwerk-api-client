@@ -281,6 +281,17 @@ class DetectionProfilesAPI(HTTPRequester):
     def delete_detection_profile(self, any_id):
         return self._delete(url=(self.__sub_url, str(any_id)))
 
+    def delete_detection_profiles(self):
+        return self._delete(url=self.__sub_url)
+
+    def select_detection_profile(self, any_id):
+        if isinstance(any_id, int):
+            profile = self.get_detection_profile(any_id)
+            profile_uuid = profile["uuid"]
+        else:
+            profile_uuid = any_id
+        return self._put(url=self.__sub_url, data={"current_profile_id": profile_uuid})
+
     def run_autogain(
         self,
         minimum_sample_rate=None,
